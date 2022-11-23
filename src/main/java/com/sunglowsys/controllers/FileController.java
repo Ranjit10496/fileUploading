@@ -20,7 +20,6 @@ import java.util.List;
 @RequestMapping("/file")
 public class FileController {
 
-    @Autowired
     private final FileService fileService;
 
     @Value("${project.image}")
