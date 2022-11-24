@@ -2,7 +2,6 @@ package com.sunglowsys.controllers;
 
 import com.sunglowsys.payload.FileResponse;
 import com.sunglowsys.services.FileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +24,9 @@ public class FileController {
     @Value("${project.image}")
     private String path;
 
+    @Value("${file.size}")
+    private long fileSize;
+
     private List<String> exts = Arrays.asList(new String[]{"jpg", "jpeg", "png"});
 
     public FileController(FileService fileService) {
@@ -36,6 +38,9 @@ public class FileController {
         String fileName = image.getOriginalFilename();
         if (!exts.contains(getExtension(fileName))) {
             return new ResponseEntity<>(new FileResponse(fileName,"Invalid file Extension. Allowed only: " + exts), HttpStatus.BAD_REQUEST);
+        }
+        if (image.getSize() > fileSize) {
+            return new ResponseEntity<>(new FileResponse(image.getOriginalFilename(), "please upload file less then" + (fileSize+1) + "KB size"), HttpStatus.NOT_ACCEPTABLE);
         }
 
         this.fileService.uploadImage(path, image);
